@@ -31,6 +31,7 @@ int main(int argc, char *argv[]){
     string value;
     string randomStrings[10] = {"key", "pee", "wee", "fee", "store", "flee", "wee", "fee", "store", "flee"};
     for(int i = 0; i < 1000; i++){
+        
         key = randomStrings[rand() % 10] + to_string(i) + randomStrings[rand() % 10];
         value = "value" + to_string(i);
         // printf("keys: %s\n", keys);
