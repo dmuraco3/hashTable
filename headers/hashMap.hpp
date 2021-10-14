@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <thread>
 #include <future>
-
+#include <stdlib.h>
 #include <fstream>
+
+#include "prime.hpp"
 
 using namespace std;
 
@@ -23,10 +25,14 @@ class hashTable
 {
 
 public:
-
     // hashing function for hash table
     bool shouldRehash(int size, int filled){
-        return 0.6 <= (double)filled/size;
+        if(numEntries <= 25000){
+          return 0.7 <= (double)filled/size;
+        } else if(numEntries > 25000){
+          return 0.6 <= (double)filled/size;
+          
+        }
     };  
 
     void resize(){ // wrapper for rehash
@@ -39,7 +45,7 @@ public:
 
     void rehash(tableEntry param[]){
         int oldSize = size;
-        int newSize = oldSize * 2;
+        int newSize = next_prime(size);
 
         depth = 0; // reset depth
         filled = 0; //reset filled
@@ -81,7 +87,7 @@ public:
 
         } else {
             for(int i = 0; i < key.length(); i++){
-                hash = (hash + key[i]) % (size);
+                hash = (hash + key[i])  % (size)  ; // introducing size here lessens collisions because of more randomness
             }
             return hash;
         }
@@ -142,6 +148,7 @@ public:
         if(shouldRehash(size, filled) == true && rehash_idx == 0){
             resize();
         }
+        numEntries +=1;
     };
     void remove(string key){
         int index = hash(key, size);
@@ -217,12 +224,13 @@ public:
 
     bool debug=true;
     int filled = 0;
-    int size = 10;
+    int size = 23; // size = 23 because it is prime number so less collisions
 
 private:
-    tableEntry *entries = new tableEntry[10];
+    tableEntry *entries = new tableEntry[23]; // size = 23 because it is prime number so less collisions
     int rehash_idx = 0;
     int depth = 0;
+    int numEntries = 0;
 
 
 };

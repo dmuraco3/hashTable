@@ -1,4 +1,5 @@
 #include "hashMap.hpp"
+#include "prime.hpp"
 // #include "httplib.h"
 #include <stdio.h>
 #include <sstream>
@@ -30,14 +31,14 @@ int main(int argc, char *argv[]){
     string key;
     string value;
     string randomStrings[10] = {"key", "pee", "wee", "fee", "store", "flee", "wee", "fee", "store", "flee"};
-    for(int i = 0; i < 1000; i++){
+    for(int i = 0; i < 100000; i++){
         
         key = randomStrings[rand() % 10] + to_string(i) + randomStrings[rand() % 10];
         value = "value" + to_string(i);
         // printf("keys: %s\n", keys);
         hash.insert(key, value);
     }
-    for(int i = 0; i < 5000; i++){
+    for(int i = 0; i < 1000; i++){
         key = "key" + to_string(i);
         value = "value" + to_string(i);
         hash.search(key);
@@ -46,7 +47,24 @@ int main(int argc, char *argv[]){
     hash.remove("key20");
     cout << "\n" << hash.filled << " : " << hash.size<< "\n";
     cout << "\n" << "max depth of hashtable" << " : " << hash.returnDepth()<< "\n";
+    string userKey;
+    string userValue;
 
-    hash.serialize();
+    cout << "key: ";
+    cin >> userKey;
+    cout << "value: ";
+    cin >> userValue;
+    cout << endl;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    hash.insert(userKey, userValue);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    cout << "time to insert after 100000 entries: " << duration.count() << " microseconds" << endl;
+
+
+
+    // hash.serialize();
     return 0;
 }
