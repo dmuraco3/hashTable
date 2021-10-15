@@ -31,7 +31,8 @@ public:
           return 0.7 <= (double)filled/size;
         } else if(numEntries > 25000){
           return 0.6 <= (double)filled/size;
-          
+        } else {
+          return 0.6 <= (double)filled/size;
         }
     };  
 
@@ -150,7 +151,7 @@ public:
         }
         numEntries +=1;
     };
-    void remove(string key){
+    bool remove(string key){
         int index = hash(key, size);
         tableEntry *entry = &entries[index];
         tableEntry *prev = entry;
@@ -161,6 +162,7 @@ public:
                 struct tableEntry* newEntry = new tableEntry;
                 entries[index] = *newEntry;
                 filled--;
+                return 1;
             } else {
                 entry = entry -> next;
             }
@@ -172,11 +174,13 @@ public:
                 }
                 if(key == entry -> key) {
                     prev -> next = entry -> next;
-                    break;
+                    return 1;
                 }
 
             }
+            return 0; // return 0 if key is not found
         }
+        return 0;
     };
     //find the value associated with key in hashtable
     string search(string key){
