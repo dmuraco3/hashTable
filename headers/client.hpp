@@ -3,6 +3,7 @@
 
 #include "httplib.h"
 
+#include <future>
 #include <hashMap.hpp>
 using namespace std;
 
@@ -122,39 +123,46 @@ class client
     }
 
     void serverStart() {
-        httplib::Server svr;
-        svr.Get("/get", [&](const httplib::Request &req, httplib::Response &res) {
-            printf("request from : %s \n", (char*)req.remote_addr.c_str());
-            if(req.has_param("key")){
-                string key = req.get_param_value("key");
-                string searchStatus = userTable.search(key);
-                res.set_content(searchStatus, "text/plain");
+        auto t1 = std::thread([this]() {
+            httplib::Server svr;
+            svr.Get("/get", [&](const httplib::Request &req, httplib::Response &res) {
+                printf("request from : %s \n", (char*)req.remote_addr.c_str());
+                if(req.has_param("key")){
+                    string key = req.get_param_value("key");
+                    string searchStatus = userTable.search(key);
+                    res.set_content(searchStatus, "text/plain");
 
-            } else {
-                res.status = 400;
-                res.set_content("no key provided", "text/plain");
-            }
-
-        });
-        svr.Put("/insert", [&](const httplib::Request &req, httplib::Response &res) {
-            printf("request from : %s \n", (char*)req.remote_addr.c_str());
-            if(req.has_param("key") && req.has_param("value")){
-                string key = req.get_param_value("key");
-                string value = req.get_param_value("value");
-                bool insertStatus = userTable.insert(key, value);
-                if(insertStatus == 1) {
-                    res.status = 200;
-                    res.set_content("inserted key", "text/plain");
                 } else {
-                    res.status = 403;
-                    res.set_content("couldn't insert key", "text/plain");
+                    res.status = 400;
+                    res.set_content("no key provided", "text/plain");
                 }
 
-            }
-        });
-        cout << "listening for requests" << endl;
+            });
+            svr.Put("/insert", [&](const httplib::Request &req, httplib::Response &res) {
+                printf("request from : %s \n", (char*)req.remote_addr.c_str());
+                if(req.has_param("key") && req.has_param("value")){
+                    string key = req.get_param_value("key");
+                    string value = req.get_param_value("value");
+                    bool insertStatus = userTable.insert(key, value);
+                    if(insertStatus == 1) {
+                        res.status = 200;
+                        res.set_content("inserted key", "text/plain");
+                    } else {
+                        res.status = 403;
+                        res.set_content("couldn't insert key", "text/plain");
+                    }
 
-        svr.listen("localhost", 8080);
+                }
+            });
+            cout << "listening for requests" << endl;
+
+            svr.listen("localhost", 8080);
+        });
+        // auto t2 = std::thread([this]() {
+        //     clientStart();
+        // });
+        t1.join();
+        
     }   
 };
 
