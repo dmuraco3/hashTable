@@ -51,7 +51,8 @@ int main(int argc, char *argv[]){
     
     client* userClient = new client;
 
-    userClient ->clientStart();
+    // userClient ->clientStart();
+    userClient -> serverStart();
 
 
 

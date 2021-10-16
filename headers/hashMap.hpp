@@ -96,8 +96,11 @@ public:
 
     // insert keyed valued into hash table
     //todo: fix collisions using linked list
-    void insert(string key, string value, tableEntry *optionEntries = NULL, int sizePassed = 0){
+    bool insert(string key, string value, tableEntry *optionEntries = NULL, int sizePassed = 0){
         int localSize = size;
+
+        bool succesfull = 0;
+
         if(sizePassed != 0 ){
             localSize = sizePassed;
         }
@@ -119,6 +122,7 @@ public:
         if(local[index].key.size() == 0){
             local[index] = *entry;
             filled++;
+            succesfull = 1;
 
             
         } else {
@@ -128,10 +132,12 @@ public:
                 bucketDepth+=1;
                 if(key == temp -> key) {
                     temp -> value = value;
+                    succesfull = 1;
                     break;
                 }
                 if(temp -> next == NULL){
                     temp -> next = entry;
+                    succesfull = 1;
                     break;
                 } 
                 if(temp -> next != NULL){
@@ -141,6 +147,7 @@ public:
 
             }
             temp -> next = entry;
+            succesfull = 1;
             
             if(bucketDepth > depth){
                 depth = bucketDepth;
@@ -150,6 +157,7 @@ public:
             resize();
         }
         numEntries +=1;
+        return succesfull;
     };
     bool remove(string key){
         int index = hash(key, size);
