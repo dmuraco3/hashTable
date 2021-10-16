@@ -35,6 +35,7 @@ class client
             ss >> mainCommand;
 
             if(mainCommand == "exit"){
+                exit(1);
                 return EXIT;
             }
             else if(mainCommand == "insert"){
